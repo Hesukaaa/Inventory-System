@@ -8,6 +8,11 @@ import jwt from "jsonwebtoken";
 import productRoutes from "./routes/product.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import warehouseRoutes from "./routes/warehouse.routes.js";
+import supplierRoutes from "./routes/supplier.routes.js";
+import purchaseOrderRoutes from "./routes/purchaseorder.routes.js";
+import stockTransactionRoutes from "./routes/stocktransaction.routes.js";
+import maintenanceRoutes from "./routes/maintenance.routes.js";
 
 dotenv.config();
 
@@ -21,6 +26,11 @@ app.get("/health", (req, res) => res.json({ status: "ok" }));
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api", authRoutes);
+app.use("/api/warehouses", warehouseRoutes);
+app.use("/api/suppliers", supplierRoutes);
+app.use("/api/purchase-orders", purchaseOrderRoutes);
+app.use("/api/stock-transactions", stockTransactionRoutes);
+app.use("/api/maintenance", maintenanceRoutes);
 
 function authMiddleware(req, res, next) {
   const header = req.headers.authorization || "";

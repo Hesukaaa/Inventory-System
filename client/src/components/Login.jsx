@@ -70,6 +70,7 @@ function RegisterForm({ onSwitch }) {
         throw new Error(err.message || "Registration failed");
       }
       const data = await res.json();
+      if (!data.user) throw new Error(data.message || "Registration failed");
       onSwitch("login");
       onLogin({ email: data.user.email, name: data.user.name, token: data.token });
     } catch (err) {
@@ -176,10 +177,7 @@ export default function App({ onLogin }) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
-      if (!res.ok) throw new Error("Invalid credentials");
-      const data = await res.json();
-      onLogin({ email: data.user.email, name: data.user.name, token: data.token });
+      await onLogin({ email, password, name: email.split("@")[0] || "User" });
     } catch (err) {
       setError(err.message || "Something went wrong");
     } finally {
