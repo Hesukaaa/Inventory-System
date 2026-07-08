@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useToast } from "./Toast";
+import logo from "../assets/logo.png";
+import invento from "../assets/invento.png";
 
 function HexLogo() {
   return (
     <div className="login-logo-wrap">
-      <img src="/image/logo.png" alt="Logo" className="login-logo-img" />
+      <img src={logo} alt="Logo" className="login-logo-img" />
     </div>
   );
 }
