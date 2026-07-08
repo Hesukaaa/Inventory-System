@@ -30,7 +30,7 @@ function Sidebar({ page, setPage, user, onLogout }) {
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`} aria-label="Sidebar navigation">
       <div className="sidebar-header">
         <div className="sidebar-logo">
-          <img src={logo} alt="Logo" className="sidebar-logo-img" />
+          <img src="/image/logo.png" alt="Logo" className="sidebar-logo-img" />
           {!collapsed && <div className="sidebar-title">iMAGE<br /><span>&amp; MAINTENANCE</span><br />DEPARTMENT</div>}
         </div>
         <button
