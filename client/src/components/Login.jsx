@@ -195,7 +195,7 @@ function Login({ onLogin }) {
                 </button>
               </div>
               <div className="login-footer">
-                <span className="login-copyright">© 2025 Image and Maintenance Department. All rights reserved.</span>
+                <span className="login-copyright">© 2026 Image and Maintenance Department. All rights reserved.</span>
                 <span className="login-footer-link">Don't have an account? <button type="button" className="text-btn" onClick={() => setMode("register")}>Sign up</button></span>
               </div>
             </>
@@ -427,7 +427,7 @@ function RegisterForm({ onSwitch, onLogin }) {
         </button>
       </form>
       <div className="login-footer">
-        <span className="login-copyright">© 2025 Image and Maintenance Department. All rights reserved.</span>
+        <span className="login-copyright">© 2026 Image and Maintenance Department. All rights reserved.</span>
         <span className="login-footer-link">Already have an account? <button type="button" className="text-btn" onClick={() => onSwitch("login")}>Sign in</button></span>
       </div>
     </>
