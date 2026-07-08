@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ToastProvider } from "./components/Toast";
 import Login from "./components/Login";
 import Sidebar from "./components/Sidebar";
 import TopHeader from "./components/TopHeader";
@@ -53,7 +54,7 @@ function useAuth() {
   return { user, login, logout };
 }
 
-export default function App() {
+function App() {
   const { user, login, logout } = useAuth();
   const [page, setPage] = useState("dashboard");
   const [products, setProducts] = useState([]);
@@ -76,8 +77,8 @@ export default function App() {
     <div className="app-layout">
       <Sidebar page={page} setPage={setPage} user={user} onLogout={logout} />
       <div className="main-area">
-        <TopHeader user={user} onToggleNotif={() => alert("Notifications")} />
-        <main className="main-content">
+        <TopHeader user={user} onToggleNotif={() => {}} />
+        <main className="main-content page-enter">
           {page === "dashboard" && <DashboardPage products={products} categories={categories} />}
           {page === "products" && <ProductsPage categories={categories} refresh={refresh} />}
           {page === "categories" && <CategoriesPage refresh={refresh} />}
@@ -95,5 +96,13 @@ export default function App() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function WrappedApp() {
+  return (
+    <ToastProvider>
+      <App />
+    </ToastProvider>
   );
 }

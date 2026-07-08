@@ -21,7 +21,7 @@ export default function ReportsPage() {
   }, [search]);
 
   return (
-    <div className="page-container">
+    <div className="page-container page-enter">
       <div className="page-header">
         <div className="page-header-left">
           <h1 className="page-title">Reports</h1>
@@ -33,7 +33,7 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      <div className="card">
+      <div className="card hover-lift">
         <div className="filters-card">
           <div className="search-wrap">
             <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -50,9 +50,9 @@ export default function ReportsPage() {
           <button className="ghost-btn" onClick={() => { setSearch(""); }}>Reset</button>
         </div>
 
-        <div className="grid grid-2" style={{ marginTop: 8 }}>
+        <div className="grid grid-2 stagger">
           {filtered.map((r) => (
-            <div key={r.id} className="report-card" onClick={() => alert(`Generating: ${r.title}`)}>
+            <div key={r.id} className="report-card hover-lift" onClick={() => alert(`Generating: ${r.title}`)}>
               <div className="report-icon" style={{ background: r.color }}>{r.icon}</div>
               <div>
                 <div className="report-title">{r.title}</div>

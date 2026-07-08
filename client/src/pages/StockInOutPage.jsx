@@ -1,4 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
+import { ArrowLeftRight } from "lucide-react";
+import Skeleton from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
 import api from "../lib/api";
 
 const mockTransactions = [
@@ -33,7 +36,10 @@ export default function StockInOutPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const pageSize = 10;
+
+  useEffect(() => { setTimeout(() => setLoading(false), 500); }, []);
 
   const filtered = useMemo(() => {
     let list = transactions;
@@ -79,7 +85,7 @@ export default function StockInOutPage() {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container page-enter">
       <div className="page-header">
         <div className="page-header-left">
           <h1 className="page-title">Stock In / Out</h1>
@@ -98,85 +104,97 @@ export default function StockInOutPage() {
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon-wrap">
-              <div className="stat-icon" style={{ background: "#3b82f6" }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <div className="stats-grid stagger">
+        {loading ? (
+          <>
+            <Skeleton.Box w="100%" h="90px" />
+            <Skeleton.Box w="100%" h="90px" />
+            <Skeleton.Box w="100%" h="90px" />
+            <Skeleton.Box w="100%" h="90px" />
+            <Skeleton.Box w="100%" h="90px" />
+          </>
+        ) : (
+          <>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon-wrap">
+                  <div className="stat-icon" style={{ background: "#3b82f6" }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  </div>
+                  <div className="stat-info">
+                    <div className="stat-title">TOTAL STOCK IN</div>
+                    <div className="stat-value">{totalStockIn}</div>
+                    <div className="stat-sub">Transactions</div>
+                  </div>
+                </div>
               </div>
-              <div className="stat-info">
-                <div className="stat-title">TOTAL STOCK IN</div>
-                <div className="stat-value">{totalStockIn}</div>
-                <div className="stat-sub">Transactions</div>
-              </div>
+              <div className="stat-chart"><svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}><path d={sparklineBlue} fill="none" stroke="#3b82f6" strokeWidth="2"/></svg></div>
             </div>
-          </div>
-          <div className="stat-chart"><svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}><path d={sparklineBlue} fill="none" stroke="#3b82f6" strokeWidth="2"/></svg></div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon-wrap">
-              <div className="stat-icon" style={{ background: "#10b981" }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon-wrap">
+                  <div className="stat-icon" style={{ background: "#10b981" }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  </div>
+                  <div className="stat-info">
+                    <div className="stat-title">TOTAL STOCK OUT</div>
+                    <div className="stat-value">{totalStockOut}</div>
+                    <div className="stat-sub">Transactions</div>
+                  </div>
+                </div>
               </div>
-              <div className="stat-info">
-                <div className="stat-title">TOTAL STOCK OUT</div>
-                <div className="stat-value">{totalStockOut}</div>
-                <div className="stat-sub">Transactions</div>
-              </div>
+              <div className="stat-chart"><svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}><path d={sparklineGreen} fill="none" stroke="#10b981" strokeWidth="2"/></svg></div>
             </div>
-          </div>
-          <div className="stat-chart"><svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}><path d={sparklineGreen} fill="none" stroke="#10b981" strokeWidth="2"/></svg></div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon-wrap">
-              <div className="stat-icon" style={{ background: "#8b5cf6" }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon-wrap">
+                  <div className="stat-icon" style={{ background: "#8b5cf6" }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                  </div>
+                  <div className="stat-info">
+                    <div className="stat-title">NET MOVEMENT</div>
+                    <div className="stat-value">{netMovement > 0 ? `+${netMovement}` : netMovement}</div>
+                    <div className="stat-sub">This Period</div>
+                  </div>
+                </div>
               </div>
-              <div className="stat-info">
-                <div className="stat-title">NET MOVEMENT</div>
-                <div className="stat-value">{netMovement > 0 ? `+${netMovement}` : netMovement}</div>
-                <div className="stat-sub">This Period</div>
-              </div>
+              <div className="stat-chart"><svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}><path d={sparklinePurple} fill="none" stroke="#8b5cf6" strokeWidth="2"/></svg></div>
             </div>
-          </div>
-          <div className="stat-chart"><svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}><path d={sparklinePurple} fill="none" stroke="#8b5cf6" strokeWidth="2"/></svg></div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon-wrap">
-              <div className="stat-icon" style={{ background: "#f59e0b" }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon-wrap">
+                  <div className="stat-icon" style={{ background: "#f59e0b" }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+                  </div>
+                  <div className="stat-info">
+                    <div className="stat-title">TOTAL ITEMS AFFECTED</div>
+                    <div className="stat-value">{totalItemsAffected}</div>
+                    <div className="stat-sub">Items</div>
+                  </div>
+                </div>
               </div>
-              <div className="stat-info">
-                <div className="stat-title">TOTAL ITEMS AFFECTED</div>
-                <div className="stat-value">{totalItemsAffected}</div>
-                <div className="stat-sub">Items</div>
-              </div>
+              <div className="stat-chart"><svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}><path d={sparklineYellow} fill="none" stroke="#f59e0b" strokeWidth="2"/></svg></div>
             </div>
-          </div>
-          <div className="stat-chart"><svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}><path d={sparklineYellow} fill="none" stroke="#f59e0b" strokeWidth="2"/></svg></div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon-wrap">
-              <div className="stat-icon" style={{ background: "#ec4899" }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9h6M9 15h6"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon-wrap">
+                  <div className="stat-icon" style={{ background: "#ec4899" }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9h6M9 15h6"/></svg>
+                  </div>
+                  <div className="stat-info">
+                    <div className="stat-title">TOTAL VALUE MOVEMENT</div>
+                    <div className="stat-value">₱{totalValue.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</div>
+                    <div className="stat-sub">This Period</div>
+                  </div>
+                </div>
               </div>
-              <div className="stat-info">
-                <div className="stat-title">TOTAL VALUE MOVEMENT</div>
-                <div className="stat-value">₱{totalValue.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</div>
-                <div className="stat-sub">This Period</div>
-              </div>
+              <div className="stat-chart"><svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}><path d={sparklinePink} fill="none" stroke="#ec4899" strokeWidth="2"/></svg></div>
             </div>
-          </div>
-          <div className="stat-chart"><svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}><path d={sparklinePink} fill="none" stroke="#ec4899" strokeWidth="2"/></svg></div>
-        </div>
+          </>
+        )}
       </div>
 
-      <div className="card">
+      <div className="card hover-lift">
         <div className="filters-card">
           <div className="search-wrap">
             <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -203,90 +221,91 @@ export default function StockInOutPage() {
         </div>
 
         <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Date & Time <span className="sort-icon">⇅</span></th>
-                <th>Type <span className="sort-icon">⇅</span></th>
-                <th>Reference No. <span className="sort-icon">⇅</span></th>
-                <th>Item <span className="sort-icon">⇅</span></th>
-                <th>Warehouse</th>
-                <th>Unit</th>
-                <th>Value <span className="sort-icon">⇅</span></th>
-                <th>Received By / Issued To</th>
-                <th>Status</th>
-                <th style={{ width: 100 }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paged.map((t) => (
-                <tr key={t._id}>
-                  <td>
-                    <div className="datetime-cell">
-                      <span className="date-text">{t.date}</span>
-                      <span className="time-text">{t.time}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`type-badge ${t.type === "Stock In" ? "in" : "out"}`}>
-                      {t.type === "Stock In" ? (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                      ) : (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                      )}
-                      {t.type}
-                    </span>
-                  </td>
-                  <td>{t.reference}</td>
-                  <td>
-                    <div className="item-cell">
-                      <div className="item-icon">
-                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(t.item)}&background=random&size=32`} alt="" />
-                      </div>
-                      <span>{t.item}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="warehouse-cell">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                      {t.warehouse}
-                    </div>
-                  </td>
-                  <td>{t.unit}</td>
-                  <td>₱{Number(t.value || 0).toLocaleString("en-PH", { minimumFractionDigits: 2 })}</td>
-                  <td>
-                    <div className="item-cell">
-                      <div className="avatar-sm">
-                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(t.person)}&background=random&size=32`} alt="" />
-                      </div>
-                      <span>{t.person}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`badge ${statusBadge(t.status)}`}>{t.status}</span>
-                  </td>
-                  <td>
-                    <div className="action-btns">
-                      <button className="icon-btn" title="View" onClick={() => alert(`View ${t.reference}`)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      </button>
-                      <button className="icon-btn" title="Edit" onClick={() => alert(`Edit ${t.reference}`)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
-                      </button>
-                      <button className="icon-btn" title="More" onClick={() => alert(`More options for ${t.reference}`)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {paged.length === 0 && (
+          {loading ? (
+            <SkeletonTable rows={8} cols={10} />
+          ) : filtered.length === 0 ? (
+            <EmptyState icon={<ArrowLeftRight size={48} color="#6366f1" />} title="No transactions found" />
+          ) : (
+            <table>
+              <thead>
                 <tr>
-                  <td colSpan="10" style={{ textAlign: "center", padding: 24, color: "#64748b" }}>No transactions found</td>
+                  <th>Date & Time <span className="sort-icon">⇅</span></th>
+                  <th>Type <span className="sort-icon">⇅</span></th>
+                  <th>Reference No. <span className="sort-icon">⇅</span></th>
+                  <th>Item <span className="sort-icon">⇅</span></th>
+                  <th>Warehouse</th>
+                  <th>Unit</th>
+                  <th>Value <span className="sort-icon">⇅</span></th>
+                  <th>Received By / Issued To</th>
+                  <th>Status</th>
+                  <th style={{ width: 100 }}>Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paged.map((t) => (
+                  <tr key={t._id}>
+                    <td>
+                      <div className="datetime-cell">
+                        <span className="date-text">{t.date}</span>
+                        <span className="time-text">{t.time}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`type-badge ${t.type === "Stock In" ? "in" : "out"}`}>
+                        {t.type === "Stock In" ? (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        )}
+                        {t.type}
+                      </span>
+                    </td>
+                    <td>{t.reference}</td>
+                    <td>
+                      <div className="item-cell">
+                        <div className="item-icon">
+                          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(t.item)}&background=random&size=32`} alt="" />
+                        </div>
+                        <span>{t.item}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="warehouse-cell">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        {t.warehouse}
+                      </div>
+                    </td>
+                    <td>{t.unit}</td>
+                    <td>₱{Number(t.value || 0).toLocaleString("en-PH", { minimumFractionDigits: 2 })}</td>
+                    <td>
+                      <div className="item-cell">
+                        <div className="avatar-sm">
+                          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(t.person)}&background=random&size=32`} alt="" />
+                        </div>
+                        <span>{t.person}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`badge ${statusBadge(t.status)}`}>{t.status}</span>
+                    </td>
+                    <td>
+                      <div className="action-btns">
+                        <button className="icon-btn" title="View" onClick={() => alert(`View ${t.reference}`)}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                        <button className="icon-btn" title="Edit" onClick={() => alert(`Edit ${t.reference}`)}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+                        </button>
+                        <button className="icon-btn" title="More" onClick={() => alert(`More options for ${t.reference}`)}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
         <div className="pagination">

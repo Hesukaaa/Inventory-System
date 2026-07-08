@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import api from "../lib/api";
+import Skeleton from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
 
 const warehouseColors = {
   Cebu: "#3b82f6",
@@ -53,11 +55,16 @@ const StatCard = ({ title, value, sub, color, icon }) => (
 
 export default function WarehousesPage() {
   const [warehouses, setWarehouses] = useState(mockWarehouses);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 10;
+
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 600);
+  }, []);
 
   const locations = useMemo(() => {
     const set = new Set(warehouses.map((w) => w.location).filter(Boolean));
@@ -92,13 +99,13 @@ export default function WarehousesPage() {
   const inactiveCount = warehouses.filter((w) => w.status === "Inactive").length;
 
   return (
-    <div className="page-container">
+    <div className="page-container page-enter">
       <div className="page-header">
         <div className="page-header-left">
           <h1 className="page-title">Warehouses</h1>
           <div className="breadcrumb">Dashboard &nbsp;/&nbsp; Warehouses</div>
         </div>
-        <div className="page-header-actions">
+        <div className="page-header-actions actions">
           <button className="ghost-btn" onClick={() => alert("Export Excel")}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6, verticalAlign: "middle" }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Export Excel
@@ -111,20 +118,31 @@ export default function WarehousesPage() {
         </div>
       </div>
 
-      <div className="stats-grid">
-        <StatCard title="TOTAL WAREHOUSES" value={warehouses.length} sub="All warehouses" color="#3b82f6" icon={defaultWarehouseIcon} />
-        <StatCard title="ACTIVE WAREHOUSES" value={activeCount} sub="Currently active" color="#10b981" icon={
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-        } />
-        <StatCard title="INACTIVE WAREHOUSES" value={inactiveCount} sub="Currently inactive" color="#f59e0b" icon={
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        } />
-        <StatCard title="TOTAL ITEMS" value={totalItems.toLocaleString()} sub="Across all warehouses" color="#8b5cf6" icon={
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-        } />
+      <div className="stats-grid stagger">
+        {loading ? (
+          <>
+            <Skeleton.Box w="100%" h="90px" />
+            <Skeleton.Box w="100%" h="90px" />
+            <Skeleton.Box w="100%" h="90px" />
+            <Skeleton.Box w="100%" h="90px" />
+          </>
+        ) : (
+          <>
+            <StatCard title="TOTAL WAREHOUSES" value={warehouses.length} sub="All warehouses" color="#3b82f6" icon={defaultWarehouseIcon} />
+            <StatCard title="ACTIVE WAREHOUSES" value={activeCount} sub="Currently active" color="#10b981" icon={
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            } />
+            <StatCard title="INACTIVE WAREHOUSES" value={inactiveCount} sub="Currently inactive" color="#f59e0b" icon={
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            } />
+            <StatCard title="TOTAL ITEMS" value={totalItems.toLocaleString()} sub="Across all warehouses" color="#8b5cf6" icon={
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            } />
+          </>
+        )}
       </div>
 
-      <div className="card">
+      <div className="card hover-lift">
         <div className="filters-card">
           <div className="search-wrap">
             <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -146,72 +164,87 @@ export default function WarehousesPage() {
         </div>
 
         <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th style={{ width: 40 }}><input type="checkbox" /></th>
-                <th>Warehouse Name</th>
-                <th>Location</th>
-                <th>Total Items</th>
-                <th>Manager</th>
-                <th>Status</th>
-                <th>Created At</th>
-                <th style={{ width: 100 }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paged.map((w) => (
-                <tr key={w._id}>
-                  <td><input type="checkbox" /></td>
-                  <td>
-                    <div className="item-cell">
-                      <div className="item-icon" style={{ background: `${w.color}1a`, color: w.color }}>
-                        {defaultWarehouseIcon}
-                      </div>
-                      <span>{w.name}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="warehouse-cell">
-                      {defaultMapPin}
-                      {w.location}
-                    </div>
-                  </td>
-                  <td>{Number(w.totalItems || 0).toLocaleString()}</td>
-                  <td>
-                    <div className="item-cell">
-                      <div className="avatar-sm">
-                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(w.manager)}&background=random&size=32`} alt="" />
-                      </div>
-                      <span>{w.manager}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`badge ${w.status === "Active" ? "active" : "inactive"}`}>{w.status}</span>
-                  </td>
-                  <td>{w.createdAt}</td>
-                  <td>
-                    <div className="action-btns">
-                      <button className="icon-btn" title="View" onClick={() => alert(`View ${w.name}`)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      </button>
-                      <button className="icon-btn" title="Edit" onClick={() => alert(`Edit ${w.name}`)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
-                      </button>
-                      <button className="icon-btn" title="More" onClick={() => alert(`More options for ${w.name}`)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {paged.length === 0 && (
+          {loading ? (
+            <Skeleton.Table rows={8} cols={8} />
+          ) : warehouses.length === 0 ? (
+            <EmptyState
+              icon={
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+              }
+              title="No warehouses yet"
+              description="Get started by adding your first warehouse to manage inventory locations."
+              action={<button className="ghost-btn" onClick={() => { setSearch(""); setStatusFilter(""); setLocationFilter(""); }}>Clear Filters</button>}
+            />
+          ) : (
+            <table>
+              <thead>
                 <tr>
-                  <td colSpan="8" style={{ textAlign: "center", padding: 24, color: "#64748b" }}>No warehouses found</td>
+                  <th style={{ width: 40 }}><input type="checkbox" /></th>
+                  <th>Warehouse Name</th>
+                  <th>Location</th>
+                  <th>Total Items</th>
+                  <th>Manager</th>
+                  <th>Status</th>
+                  <th>Created At</th>
+                  <th style={{ width: 100 }}>Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paged.map((w) => (
+                  <tr key={w._id}>
+                    <td><input type="checkbox" /></td>
+                    <td>
+                      <div className="item-cell">
+                        <div className="item-icon" style={{ background: `${w.color}1a`, color: w.color }}>
+                          {defaultWarehouseIcon}
+                        </div>
+                        <span>{w.name}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="warehouse-cell">
+                        {defaultMapPin}
+                        {w.location}
+                      </div>
+                    </td>
+                    <td>{Number(w.totalItems || 0).toLocaleString()}</td>
+                    <td>
+                      <div className="item-cell">
+                        <div className="avatar-sm">
+                          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(w.manager)}&background=random&size=32`} alt="" />
+                        </div>
+                        <span>{w.manager}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`badge ${w.status === "Active" ? "active" : "inactive"}`}>{w.status}</span>
+                    </td>
+                    <td>{w.createdAt}</td>
+                    <td>
+                      <div className="action-btns actions">
+                        <button className="icon-btn" title="View" onClick={() => alert(`View ${w.name}`)}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                        <button className="icon-btn" title="Edit" onClick={() => alert(`Edit ${w.name}`)}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+                        </button>
+                        <button className="icon-btn" title="More" onClick={() => alert(`More options for ${w.name}`)}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {paged.length === 0 && (
+                  <tr>
+                    <td colSpan="8" style={{ textAlign: "center", padding: 24, color: "#64748b" }}>No warehouses found</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
 
         <div className="pagination">

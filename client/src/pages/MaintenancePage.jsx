@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Search, ChevronDown, Download, Printer, Plus, Eye, MoreVertical } from "lucide-react";
+import { Search, ChevronDown, Download, Printer, Plus, Eye, MoreVertical, Wrench } from "lucide-react";
+import Skeleton from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
 
 const today = new Date();
 const fmt = (d) => d && new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
@@ -24,7 +26,10 @@ export default function MaintenancePage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [warehouseFilter, setWarehouseFilter] = useState("");
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const pageSize = 10;
+
+  useEffect(() => { setTimeout(() => setLoading(false), 500); }, []);
 
   const totalRequests = maintenanceData.length;
   const completed = maintenanceData.filter((m) => m.status === "Completed").length;
@@ -90,7 +95,7 @@ export default function MaintenancePage() {
   };
 
   return (
-    <div className="page-container maintenance-page">
+    <div className="page-container maintenance-page page-enter">
       <div className="page-header">
         <div className="page-header-left">
           <h1 className="page-title">Maintenance</h1>
@@ -103,99 +108,111 @@ export default function MaintenancePage() {
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon" style={{ background: "#3b82f6" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
+      <div className="stats-grid stagger">
+        {loading ? (
+          <>
+            <Skeleton.Box w="100%" h="90px" />
+            <Skeleton.Box w="100%" h="90px" />
+            <Skeleton.Box w="100%" h="90px" />
+            <Skeleton.Box w="100%" h="90px" />
+            <Skeleton.Box w="100%" h="90px" />
+          </>
+        ) : (
+          <>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon" style={{ background: "#3b82f6" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
+                </div>
+                <div className="stat-info">
+                  <div className="stat-title">TOTAL REQUESTS</div>
+                  <div className="stat-value">{totalRequests}</div>
+                  <div className="stat-sub">All maintenance requests</div>
+                </div>
+              </div>
+              <div className="stat-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
+                  <path d={sparklinePaths.blue} fill="none" stroke="#3b82f6" strokeWidth="2"/>
+                </svg>
+              </div>
             </div>
-            <div className="stat-info">
-              <div className="stat-title">TOTAL REQUESTS</div>
-              <div className="stat-value">{totalRequests}</div>
-              <div className="stat-sub">All maintenance requests</div>
-            </div>
-          </div>
-          <div className="stat-chart">
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
-              <path d={sparklinePaths.blue} fill="none" stroke="#3b82f6" strokeWidth="2"/>
-            </svg>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon" style={{ background: "#22c55e" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon" style={{ background: "#22c55e" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div className="stat-info">
+                  <div className="stat-title">COMPLETED</div>
+                  <div className="stat-value">{completed}</div>
+                  <div className="stat-sub">This Period</div>
+                </div>
+              </div>
+              <div className="stat-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
+                  <path d={sparklinePaths.green} fill="none" stroke="#22c55e" strokeWidth="2"/>
+                </svg>
+              </div>
             </div>
-            <div className="stat-info">
-              <div className="stat-title">COMPLETED</div>
-              <div className="stat-value">{completed}</div>
-              <div className="stat-sub">This Period</div>
-            </div>
-          </div>
-          <div className="stat-chart">
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
-              <path d={sparklinePaths.green} fill="none" stroke="#22c55e" strokeWidth="2"/>
-            </svg>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon" style={{ background: "#f59e0b" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon" style={{ background: "#f59e0b" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div className="stat-info">
+                  <div className="stat-title">IN PROGRESS</div>
+                  <div className="stat-value">{inProgress}</div>
+                  <div className="stat-sub">Currently in progress</div>
+                </div>
+              </div>
+              <div className="stat-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
+                  <path d={sparklinePaths.amber} fill="none" stroke="#f59e0b" strokeWidth="2"/>
+                </svg>
+              </div>
             </div>
-            <div className="stat-info">
-              <div className="stat-title">IN PROGRESS</div>
-              <div className="stat-value">{inProgress}</div>
-              <div className="stat-sub">Currently in progress</div>
-            </div>
-          </div>
-          <div className="stat-chart">
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
-              <path d={sparklinePaths.amber} fill="none" stroke="#f59e0b" strokeWidth="2"/>
-            </svg>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon" style={{ background: "#ef4444" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon" style={{ background: "#ef4444" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div className="stat-info">
+                  <div className="stat-title">OVERDUE</div>
+                  <div className="stat-value">{overdue}</div>
+                  <div className="stat-sub">Past due requests</div>
+                </div>
+              </div>
+              <div className="stat-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
+                  <path d={sparklinePaths.red} fill="none" stroke="#ef4444" strokeWidth="2"/>
+                </svg>
+              </div>
             </div>
-            <div className="stat-info">
-              <div className="stat-title">OVERDUE</div>
-              <div className="stat-value">{overdue}</div>
-              <div className="stat-sub">Past due requests</div>
-            </div>
-          </div>
-          <div className="stat-chart">
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
-              <path d={sparklinePaths.red} fill="none" stroke="#ef4444" strokeWidth="2"/>
-            </svg>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon" style={{ background: "#a855f7" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9h6M9 15h6"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon" style={{ background: "#a855f7" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9h6M9 15h6"/></svg>
+                </div>
+                <div className="stat-info">
+                  <div className="stat-title">TOTAL COST</div>
+                  <div className="stat-value">₱{totalCost.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  <div className="stat-sub">This Period</div>
+                </div>
+              </div>
+              <div className="stat-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
+                  <path d={sparklinePaths.purple} fill="none" stroke="#a855f7" strokeWidth="2"/>
+                </svg>
+              </div>
             </div>
-            <div className="stat-info">
-              <div className="stat-title">TOTAL COST</div>
-              <div className="stat-value">₱{totalCost.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-              <div className="stat-sub">This Period</div>
-            </div>
-          </div>
-          <div className="stat-chart">
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
-              <path d={sparklinePaths.purple} fill="none" stroke="#a855f7" strokeWidth="2"/>
-            </svg>
-          </div>
-        </div>
+          </>
+        )}
       </div>
 
-      <div className="card">
+      <div className="card hover-lift">
         <div className="filters-card">
           <div className="search-wrap">
             <Search className="search-icon" size={18} />
@@ -222,73 +239,74 @@ export default function MaintenancePage() {
         </div>
 
         <div className="table-wrap">
-          <table className="maintenance-table">
-            <thead>
-              <tr>
-                <th>Request No.</th>
-                <th>Item</th>
-                <th>Type</th>
-                <th>Reported By</th>
-                <th>Warehouse</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Reported Date</th>
-                <th>Due Date</th>
-                <th>Est. Cost</th>
-                <th style={{ width: 100 }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paged.map((m) => (
-                <tr key={m.id}>
-                  <td style={{ fontWeight: 600, color: "#0f172a" }}>{m.id}</td>
-                  <td>
-                    <div className="item-cell">
-                      <div className="item-icon">
-                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(m.item)}&background=random&size=32`} alt="" />
-                      </div>
-                      <span>{m.item}</span>
-                    </div>
-                  </td>
-                  <td><span className={`badge ${typeColor(m.type)}`}>{m.type}</span></td>
-                  <td>
-                    <div className="user-cell">
-                      <div className="item-icon" style={{ width: 28, height: 28, borderRadius: "50%" }}>
-                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(m.reportedBy)}&background=random&size=28`} alt="" />
-                      </div>
-                      <span>{m.reportedBy}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="warehouse-cell">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                      {m.warehouse}
-                    </div>
-                  </td>
-                  <td><span className={`badge ${priorityColor(m.priority)}`}>{m.priority}</span></td>
-                  <td><span className={`badge ${statusColor(m.status)}`}>{m.status}</span></td>
-                  <td>{m.reportedDate}</td>
-                  <td>{m.dueDate}</td>
-                  <td style={{ fontWeight: 600, color: "#0f172a" }}>₱{m.cost.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                  <td>
-                    <div className="action-btns">
-                      <button className="icon-btn" title="View" onClick={() => alert(`View ${m.id}`)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      </button>
-                      <button className="icon-btn" title="More" onClick={() => alert(`More options for ${m.id}`)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {paged.length === 0 && (
+          {loading ? (
+            <SkeletonTable rows={8} cols={11} />
+          ) : filtered.length === 0 ? (
+            <EmptyState icon={<Wrench size={48} color="#6366f1" />} title="No maintenance requests found" />
+          ) : (
+            <table className="maintenance-table">
+              <thead>
                 <tr>
-                  <td colSpan="11" style={{ textAlign: "center", padding: 24, color: "#64748b" }}>No maintenance requests found</td>
+                  <th>Request No.</th>
+                  <th>Item</th>
+                  <th>Type</th>
+                  <th>Reported By</th>
+                  <th>Warehouse</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Reported Date</th>
+                  <th>Due Date</th>
+                  <th>Est. Cost</th>
+                  <th style={{ width: 100 }}>Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paged.map((m) => (
+                  <tr key={m.id}>
+                    <td style={{ fontWeight: 600, color: "#0f172a" }}>{m.id}</td>
+                    <td>
+                      <div className="item-cell">
+                        <div className="item-icon">
+                          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(m.item)}&background=random&size=32`} alt="" />
+                        </div>
+                        <span>{m.item}</span>
+                      </div>
+                    </td>
+                    <td><span className={`badge ${typeColor(m.type)}`}>{m.type}</span></td>
+                    <td>
+                      <div className="user-cell">
+                        <div className="item-icon" style={{ width: 28, height: 28, borderRadius: "50%" }}>
+                          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(m.reportedBy)}&background=random&size=28`} alt="" />
+                        </div>
+                        <span>{m.reportedBy}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="warehouse-cell">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        {m.warehouse}
+                      </div>
+                    </td>
+                    <td><span className={`badge ${priorityColor(m.priority)}`}>{m.priority}</span></td>
+                    <td><span className={`badge ${statusColor(m.status)}`}>{m.status}</span></td>
+                    <td>{m.reportedDate}</td>
+                    <td>{m.dueDate}</td>
+                    <td style={{ fontWeight: 600, color: "#0f172a" }}>₱{m.cost.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>
+                      <div className="action-btns">
+                        <button className="icon-btn" title="View" onClick={() => alert(`View ${m.id}`)}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                        <button className="icon-btn" title="More" onClick={() => alert(`More options for ${m.id}`)}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
         <div className="pagination">

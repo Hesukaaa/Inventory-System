@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
-import { Download, Printer, Plus, Eye, Edit, MoreVertical, Search } from "lucide-react";
+import { Download, Printer, Plus, Eye, Edit, MoreVertical, Search, ShoppingCart } from "lucide-react";
+import Skeleton from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
 
 const purchaseOrders = [
   { id: "PO-2025-0529-001", supplier: "ABC Hardware Corp.", category: "Office Supplies", warehouse: "Cebu Warehouse", date: "May 29, 2025", totalItems: 8, status: "Completed", totalValue: 45600.00, expectedDelivery: "Jun 05, 2025" },
@@ -21,6 +23,12 @@ export default function PurchaseOrdersPage() {
   const [warehouseFilter, setWarehouseFilter] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(t);
+  }, []);
 
   const totalOrders = purchaseOrders.length;
   const completed = purchaseOrders.filter((po) => po.status === "Completed").length;
@@ -68,7 +76,7 @@ export default function PurchaseOrdersPage() {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-enter page-container">
       <div className="page-header">
         <div className="page-header-left">
           <h1 className="page-title">Purchase Orders</h1>
@@ -81,99 +89,121 @@ export default function PurchaseOrdersPage() {
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon" style={{ background: "#3b82f6" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <div className="stats-grid stagger">
+        {loading ? (
+          <>
+            {[1, 2, 3, 4, 5].map((_, i) => (
+              <div className="stat-card" key={i}>
+                <div className="stat-header">
+                  <Skeleton.Box w={24} h={24} />
+                  <div style={{ flex: 1 }}>
+                    <Skeleton.Box w="120px" h={12} />
+                    <Skeleton.Box w="80px" h={20} style={{ marginTop: 4 }} />
+                    <Skeleton.Box w="100px" h={12} style={{ marginTop: 4 }} />
+                  </div>
+                </div>
+                <div className="stat-chart">
+                  <Skeleton.Box w="100%" h={40} />
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon" style={{ background: "#3b82f6" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <div className="stat-info">
+                  <div className="stat-title">TOTAL ORDERS</div>
+                  <div className="stat-value">{totalOrders}</div>
+                  <div className="stat-sub">All purchase orders</div>
+                </div>
+              </div>
+              <div className="stat-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
+                  <path d={sparklinePaths.blue} fill="none" stroke="#3b82f6" strokeWidth="2"/>
+                </svg>
+              </div>
             </div>
-            <div className="stat-info">
-              <div className="stat-title">TOTAL ORDERS</div>
-              <div className="stat-value">{totalOrders}</div>
-              <div className="stat-sub">All purchase orders</div>
-            </div>
-          </div>
-          <div className="stat-chart">
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
-              <path d={sparklinePaths.blue} fill="none" stroke="#3b82f6" strokeWidth="2"/>
-            </svg>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon" style={{ background: "#22c55e" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon" style={{ background: "#22c55e" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div className="stat-info">
+                  <div className="stat-title">COMPLETED</div>
+                  <div className="stat-value">{completed}</div>
+                  <div className="stat-sub">Orders</div>
+                </div>
+              </div>
+              <div className="stat-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
+                  <path d={sparklinePaths.green} fill="none" stroke="#22c55e" strokeWidth="2"/>
+                </svg>
+              </div>
             </div>
-            <div className="stat-info">
-              <div className="stat-title">COMPLETED</div>
-              <div className="stat-value">{completed}</div>
-              <div className="stat-sub">Orders</div>
-            </div>
-          </div>
-          <div className="stat-chart">
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
-              <path d={sparklinePaths.green} fill="none" stroke="#22c55e" strokeWidth="2"/>
-            </svg>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon" style={{ background: "#f59e0b" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon" style={{ background: "#f59e0b" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div className="stat-info">
+                  <div className="stat-title">PENDING</div>
+                  <div className="stat-value">{pending}</div>
+                  <div className="stat-sub">Orders</div>
+                </div>
+              </div>
+              <div className="stat-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
+                  <path d={sparklinePaths.amber} fill="none" stroke="#f59e0b" strokeWidth="2"/>
+                </svg>
+              </div>
             </div>
-            <div className="stat-info">
-              <div className="stat-title">PENDING</div>
-              <div className="stat-value">{pending}</div>
-              <div className="stat-sub">Orders</div>
-            </div>
-          </div>
-          <div className="stat-chart">
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
-              <path d={sparklinePaths.amber} fill="none" stroke="#f59e0b" strokeWidth="2"/>
-            </svg>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon" style={{ background: "#ef4444" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon" style={{ background: "#ef4444" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                </div>
+                <div className="stat-info">
+                  <div className="stat-title">CANCELLED</div>
+                  <div className="stat-value">{cancelled}</div>
+                  <div className="stat-sub">Orders</div>
+                </div>
+              </div>
+              <div className="stat-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
+                  <path d={sparklinePaths.red} fill="none" stroke="#ef4444" strokeWidth="2"/>
+                </svg>
+              </div>
             </div>
-            <div className="stat-info">
-              <div className="stat-title">CANCELLED</div>
-              <div className="stat-value">{cancelled}</div>
-              <div className="stat-sub">Orders</div>
-            </div>
-          </div>
-          <div className="stat-chart">
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
-              <path d={sparklinePaths.red} fill="none" stroke="#ef4444" strokeWidth="2"/>
-            </svg>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-header">
-            <div className="stat-icon" style={{ background: "#a855f7" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9h6M9 15h6"/></svg>
+            <div className="stat-card">
+              <div className="stat-header">
+                <div className="stat-icon" style={{ background: "#a855f7" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 9h6M9 15h6"/></svg>
+                </div>
+                <div className="stat-info">
+                  <div className="stat-title">TOTAL VALUE</div>
+                  <div className="stat-value">₱{totalValue.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  <div className="stat-sub">All orders value</div>
+                </div>
+              </div>
+              <div className="stat-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
+                  <path d={sparklinePaths.purple} fill="none" stroke="#a855f7" strokeWidth="2"/>
+                </svg>
+              </div>
             </div>
-            <div className="stat-info">
-              <div className="stat-title">TOTAL VALUE</div>
-              <div className="stat-value">₱{totalValue.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-              <div className="stat-sub">All orders value</div>
-            </div>
-          </div>
-          <div className="stat-chart">
-            <svg viewBox="0 0 100 30" preserveAspectRatio="none" style={{ width: "100%", height: "40px" }}>
-              <path d={sparklinePaths.purple} fill="none" stroke="#a855f7" strokeWidth="2"/>
-            </svg>
-          </div>
-        </div>
+          </>
+        )}
       </div>
 
-      <div className="card">
+      <div className="card hover-lift">
         <div className="filters-card">
           <div className="search-wrap">
             <Search className="search-icon" size={18} />
@@ -200,86 +230,93 @@ export default function PurchaseOrdersPage() {
           <button className="ghost-btn" onClick={() => { setSearch(""); setSupplierFilter(""); setStatusFilter(""); setWarehouseFilter(""); }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg> Reset</button>
         </div>
 
-        <div className="table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>PO No.</th>
-                <th>Supplier</th>
-                <th>Order Date</th>
-                <th>Warehouse</th>
-                <th>Total Items</th>
-                <th>Status</th>
-                <th>Total Value</th>
-                <th>Expected Delivery Date</th>
-                <th style={{ width: 100 }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paged.map((po) => (
-                <tr key={po.id}>
-                  <td style={{ fontWeight: 600, color: "#0f172a" }}>{po.id}</td>
-                  <td>
-                    <div className="item-cell">
-                      <div className="item-icon" style={{ width: 28, height: 28, borderRadius: "50%" }}>
-                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(po.supplier)}&background=random&size=28`} alt="" />
-                      </div>
-                      <div>
-                        <div style={{ fontWeight: 500, color: "#0f172a" }}>{po.supplier}</div>
-                        <div className="item-code">{po.category}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>{po.date}</td>
-                  <td>
-                    <div className="warehouse-cell">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                      {po.warehouse}
-                    </div>
-                  </td>
-                  <td style={{ fontWeight: 600, color: "#0f172a" }}>{po.totalItems}</td>
-                  <td><span className={`badge ${statusColor(po.status)}`}>{po.status}</span></td>
-                  <td style={{ fontWeight: 600, color: "#0f172a" }}>₱{po.totalValue.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                  <td>{po.expectedDelivery}</td>
-                  <td>
-                    <div className="action-btns">
-                      <button className="icon-btn" title="View" onClick={() => alert(`View ${po.id}`)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      </button>
-                      <button className="icon-btn" title="Edit" onClick={() => alert(`Edit ${po.id}`)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
-                      </button>
-                      <button className="icon-btn" title="More" onClick={() => alert(`More options for ${po.id}`)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {paged.length === 0 && (
-                <tr>
-                  <td colSpan="9" style={{ textAlign: "center", padding: 24, color: "#64748b" }}>No purchase orders found</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="pagination">
-          <div className="pagination-info">Showing {startIdx} to {endIdx} of {filtered.length} purchase orders</div>
-          <div className="pagination-controls">
-            <button className="page-btn" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={safePage <= 1}>‹</button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <button key={p} className={`page-btn ${p === safePage ? "active" : ""}`} onClick={() => setPage(p)}>{p}</button>
-            ))}
-            <button className="page-btn" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={safePage >= totalPages}>›</button>
-            <select className="pagination-select" value={pageSize} onChange={(e) => {}}>
-              <option value="10">10 / page</option>
-              <option value="20">20 / page</option>
-              <option value="50">50 / page</option>
-            </select>
+        {loading ? (
+          <div className="table-wrap">
+            <Skeleton.Table rows={8} cols={9} />
           </div>
-        </div>
+        ) : filtered.length === 0 ? (
+          <div className="table-wrap">
+            <EmptyState icon={<ShoppingCart size={48} strokeWidth={1.5} />} title="No purchase orders found" />
+          </div>
+        ) : (
+          <>
+            <div className="table-wrap">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>PO No.</th>
+                    <th>Supplier</th>
+                    <th>Order Date</th>
+                    <th>Warehouse</th>
+                    <th>Total Items</th>
+                    <th>Status</th>
+                    <th>Total Value</th>
+                    <th>Expected Delivery Date</th>
+                    <th style={{ width: 100 }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paged.map((po) => (
+                    <tr key={po.id}>
+                      <td style={{ fontWeight: 600, color: "#0f172a" }}>{po.id}</td>
+                      <td>
+                        <div className="item-cell">
+                          <div className="item-icon" style={{ width: 28, height: 28, borderRadius: "50%" }}>
+                            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(po.supplier)}&background=random&size=28`} alt="" />
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 500, color: "#0f172a" }}>{po.supplier}</div>
+                            <div className="item-code">{po.category}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>{po.date}</td>
+                      <td>
+                        <div className="warehouse-cell">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                          {po.warehouse}
+                        </div>
+                      </td>
+                      <td style={{ fontWeight: 600, color: "#0f172a" }}>{po.totalItems}</td>
+                      <td><span className={`badge ${statusColor(po.status)}`}>{po.status}</span></td>
+                      <td style={{ fontWeight: 600, color: "#0f172a" }}>₱{po.totalValue.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      <td>{po.expectedDelivery}</td>
+                      <td>
+                        <div className="action-btns">
+                          <button className="icon-btn" title="View" onClick={() => alert(`View ${po.id}`)}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                          </button>
+                          <button className="icon-btn" title="Edit" onClick={() => alert(`Edit ${po.id}`)}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+                          </button>
+                          <button className="icon-btn" title="More" onClick={() => alert(`More options for ${po.id}`)}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="pagination">
+              <div className="pagination-info">Showing {startIdx} to {endIdx} of {filtered.length} purchase orders</div>
+              <div className="pagination-controls">
+                <button className="page-btn" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={safePage <= 1}>‹</button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <button key={p} className={`page-btn ${p === safePage ? "active" : ""}`} onClick={() => setPage(p)}>{p}</button>
+                ))}
+                <button className="page-btn" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={safePage >= totalPages}>›</button>
+                <select className="pagination-select" value={pageSize} onChange={(e) => {}}>
+                  <option value="10">10 / page</option>
+                  <option value="20">20 / page</option>
+                  <option value="50">50 / page</option>
+                </select>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

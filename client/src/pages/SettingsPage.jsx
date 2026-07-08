@@ -16,7 +16,7 @@ export default function SettingsPage() {
   const update = (k, v) => setS((prev) => ({ ...prev, [k]: v }));
 
   return (
-    <div className="page-container">
+    <div className="page-container page-enter">
       <div className="page-header">
         <div className="page-header-left">
           <h1 className="page-title">Settings</h1>
@@ -27,8 +27,8 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="grid grid-2" style={{ gap: 16 }}>
-        <div className="settings-section">
+      <div className="grid grid-2 stagger" style={{ gap: 16 }}>
+        <div className="settings-section hover-lift">
           <h3 style={{ margin: "0 0 12px", fontSize: 16, color: "#0f172a" }}>General</h3>
           <div className="form-group">
             <label>System Name</label>
@@ -53,7 +53,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="settings-section">
+        <div className="settings-section hover-lift">
           <h3 style={{ margin: "0 0 12px", fontSize: 16, color: "#0f172a" }}>Notifications</h3>
           <div className="settings-row">
             <div>
@@ -78,7 +78,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="settings-section">
+        <div className="settings-section hover-lift">
           <h3 style={{ margin: "0 0 12px", fontSize: 16, color: "#0f172a" }}>Security</h3>
           <div className="settings-row">
             <div>
@@ -100,7 +100,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="settings-section">
+        <div className="settings-section hover-lift">
           <h3 style={{ margin: "0 0 12px", fontSize: 16, color: "#0f172a" }}>Danger Zone</h3>
           <div className="settings-row">
             <div>
