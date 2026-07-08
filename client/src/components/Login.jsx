@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { useToast } from "./Toast";
-import logo from "../assets/logo.png";
-import invento from "../assets/invento.png";
 
 function HexLogo() {
   return (
     <div className="login-logo-wrap">
-      <img src={logo} alt="Logo" className="login-logo-img" />
+      <img src="/Inventory-System/image/logo.png" alt="Logo" className="login-logo-img" />
     </div>
   );
 }
@@ -90,7 +88,7 @@ function Login({ onLogin }) {
           <div className="login-desc">
             Manage inventory, maintenance, and resources efficiently and effortlessly.
           </div>
-          <img src="/image/invento.png" alt="Inventory" className="login-invento-img" />
+          <img src="/Inventory-System/image/invento.png" alt="Inventory" className="login-invento-img" />
         </div>
       </div>
       <div className="login-right">

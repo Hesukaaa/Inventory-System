@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { LayoutDashboard, Boxes, FolderKanban, Warehouse, ArrowLeftRight, Wrench, Hammer, ShoppingCart, Truck, FileText, Users, Bell, Settings, LogOut, ChevronDown, Package, ClipboardList, BarChart3 } from "lucide-react";
-import logo from "../assets/logo.png";
 
 function Sidebar({ page, setPage, user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -30,7 +29,7 @@ function Sidebar({ page, setPage, user, onLogout }) {
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`} aria-label="Sidebar navigation">
       <div className="sidebar-header">
         <div className="sidebar-logo">
-          <img src={logo} alt="Logo" className="sidebar-logo-img" />
+          <img src="/Inventory-System/image/logo.png" alt="Logo" className="sidebar-logo-img" />
           {!collapsed && <div className="sidebar-title">iMAGE<br /><span>&amp; MAINTENANCE</span><br />DEPARTMENT</div>}
         </div>
         <button
