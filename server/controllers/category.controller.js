@@ -1,5 +1,4 @@
-import Category from "../models/category.model.js";
+import { getAll as getCategories, create as createCategory } from "../models/category.model.js";
 
-export const getAll = () => Category.getAll();
-
-export const createOne = async (data) => Category.create(data);
+export const getAll = () => getCategories();
+export const createOne = async (data) => createCategory(data);

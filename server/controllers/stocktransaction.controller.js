@@ -1,4 +1,4 @@
-import StockTransaction from "../models/stocktransaction.model.js";
+import { getAll as getTransactions, create as createTransaction } from "../models/stocktransaction.model.js";
 
 export const getAll = (query = {}) => {
   const filters = {};
@@ -11,7 +11,7 @@ export const getAll = (query = {}) => {
       { person: { $regex: query.search, $options: "i" } },
     ];
   }
-  return StockTransaction.getAll(filters);
+  return getTransactions(filters);
 };
 
-export const createOne = async (data) => StockTransaction.create(data);
+export const createOne = async (data) => createTransaction(data);

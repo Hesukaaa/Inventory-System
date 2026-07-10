@@ -1,4 +1,4 @@
-import Maintenance from "../models/maintenance.model.js";
+import { getAll as getMaintenance, create as createMaintenance } from "../models/maintenance.model.js";
 
 export const getAll = (query = {}) => {
   const filters = {};
@@ -13,7 +13,7 @@ export const getAll = (query = {}) => {
       { reportedBy: { $regex: query.search, $options: "i" } },
     ];
   }
-  return Maintenance.getAll(filters);
+  return getMaintenance(filters);
 };
 
-export const createOne = async (data) => Maintenance.create(data);
+export const createOne = async (data) => createMaintenance(data);

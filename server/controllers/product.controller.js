@@ -1,5 +1,5 @@
-import Product from "../models/product.model.js";
-import Category from "../models/category.model.js";
+import { getAll as getProducts, create as createProduct, findById as findProductById, findByIdAndUpdate as updateProduct, findByIdAndDelete as deleteProduct } from "../models/product.model.js";
+import { findById as findCategoryById } from "../models/category.model.js";
 
 export const getAll = async (search, category, lowStock) => {
   const filters = { isActive: true };
@@ -11,27 +11,27 @@ export const getAll = async (search, category, lowStock) => {
   }
   if (category) filters.category = category;
   if (lowStock === "true") filters.quantity = { $lte: 10 };
-  const items = Product.getAll(filters);
+  const items = getProducts(filters);
   return items.map((p) => {
-    const cat = p.category ? Category.findById(p.category) : null;
+    const cat = p.category ? findCategoryById(p.category) : null;
     return { ...p, category: cat ? { name: cat.name } : null };
   }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 };
 
-export const createOne = async (data) => Product.create(data);
+export const createOne = async (data) => createProduct(data);
 
 export const getOne = async (id) => {
-  const item = Product.findById(id);
+  const item = findProductById(id);
   if (!item) return null;
-  const cat = item.category ? Category.findById(item.category) : null;
+  const cat = item.category ? findCategoryById(item.category) : null;
   return { ...item, category: cat ? { name: cat.name } : null };
 };
 
 export const updateOne = async (id, data) => {
-  const item = Product.findByIdAndUpdate(id, data);
+  const item = updateProduct(id, data);
   if (!item) return null;
-  const cat = item.category ? Category.findById(item.category) : null;
+  const cat = item.category ? findCategoryById(item.category) : null;
   return { ...item, category: cat ? { name: cat.name } : null };
 };
 
-export const softDelete = async (id) => Product.findByIdAndUpdate(id, { isActive: false });
+export const softDelete = async (id) => updateProduct(id, { isActive: false });
