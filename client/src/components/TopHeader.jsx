@@ -1,35 +1,14 @@
-import { useState, useEffect } from "react";
 import { Search, Bell, ChevronDown } from "lucide-react";
 
-function TopHeader({ user, onToggleNotif }) {
-  const [localSearch, setLocalSearch] = useState("");
-  const [now, setNow] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [localSearch]);
-
-  useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const dateStr = now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-  const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-
+function TopHeader({ user }) {
   return (
     <header className="top-header">
-      <div className="top-header-left">
-        <div className="search-box">
-          <Search size={18} />
-          <input type="text" placeholder="Search for items, categories, serial no..." value={localSearch} onChange={(e) => setLocalSearch(e.target.value)} aria-label="Search" />
-        </div>
-        <div className="top-datetime" aria-live="polite" aria-label="Current date and time">{dateStr} • {timeStr}</div>
+      <div className="search-box">
+        <Search size={18} />
+        <input type="text" placeholder="Search for items, categories, serial no..." aria-label="Search" />
       </div>
       <div className="top-header-right">
-        <button className="top-icon-btn" aria-label="Notifications" title="Notifications" onClick={onToggleNotif}>
+        <button className="top-icon-btn" aria-label="Notifications" title="Notifications">
           <Bell size={20} />
           <span className="notif-dot" />
         </button>
@@ -54,7 +33,7 @@ function TopHeader({ user, onToggleNotif }) {
             <img src="https://i.pravatar.cc/150?u=joel" alt="Joel" />
           </div>
           <div className="top-user-info">
-            <div className="top-user-name">{user?.name || "Joel Dibbib"}</div>
+            <div className="top-user-name">{user?.name || "Joel Dibidib"}</div>
             <div className="top-user-role">Administrator</div>
           </div>
           <ChevronDown size={16} />

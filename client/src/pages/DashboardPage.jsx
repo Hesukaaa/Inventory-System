@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Plus, ArrowDownToLine, ArrowUpFromLine, RefreshCw, Wrench, FileText, FolderKanban, Warehouse, BarChart3, Package, Truck, ClipboardList } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import StatCard from "../components/StatCard";
 
@@ -14,8 +13,8 @@ const stockOverview = [
 const categoryData = [
   { name: "Electrical", value: 35, count: 860, color: "#3b82f6" },
   { name: "Carpentry", value: 25, count: 615, color: "#f97316" },
-  { name: "Tools", value: 12, count: 295, color: "#eab308" },
   { name: "Hardware", value: 20, count: 492, color: "#10b981" },
+  { name: "Tools", value: 12, count: 295, color: "#eab308" },
   { name: "Others", value: 8, count: 194, color: "#6366f1" },
 ];
 
@@ -36,15 +35,15 @@ const lowStockItems = [
 ];
 
 const quickActions = [
-  { label: "Add Item", icon: "+", href: "#" },
-  { label: "Stock In", icon: "↓", href: "#" },
-  { label: "Stock Out", icon: "↑", href: "#" },
-  { label: "Transfer", icon: "⇄", href: "#" },
-  { label: "Maintenance", icon: "🔧", href: "#" },
-  { label: "Purchase Order", icon: "📋", href: "#" },
-  { label: "Reports", icon: "📊", href: "#" },
-  { label: "Categories", icon: "📁", href: "#" },
-  { label: "Warehouses", icon: "🏭", href: "#" },
+  { label: "Add Item", icon: Plus },
+  { label: "Stock In", icon: ArrowDownToLine },
+  { label: "Stock Out", icon: ArrowUpFromLine },
+  { label: "Transfer", icon: RefreshCw },
+  { label: "Maintenance", icon: Wrench },
+  { label: "Purchase Order", icon: FileText },
+  { label: "Reports", icon: BarChart3 },
+  { label: "Categories", icon: FolderKanban },
+  { label: "Warehouses", icon: Warehouse },
 ];
 
 function getActivityIcon(icon) {
@@ -59,41 +58,34 @@ function getActivityIcon(icon) {
   }
 }
 
-function SkeletonCard() {
-  return (
-    <div className="stat-card" style={{ padding: 16 }}>
-      <div className="skeleton" style={{ width: "80px", height: 12, borderRadius: 4 }} />
-      <div className="skeleton" style={{ width: 60, height: 28, borderRadius: 6 }} />
-      <div className="skeleton" style={{ width: "100%", height: 50, borderRadius: 8 }} />
-    </div>
-  );
+function getCategoryColor(category) {
+  switch (category) {
+    case "Electrical": return "#3b82f6";
+    case "Carpentry": return "#f97316";
+    case "Hardware": return "#10b981";
+    case "Tools": return "#eab308";
+    default: return "#6366f1";
+  }
 }
 
 export default function DashboardPage({ products, categories }) {
-  const [loading, setLoading] = useState(true);
   const hasProducts = products && products.length > 0;
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(timer);
-  }, []);
 
   const totalItems = hasProducts ? products.length : 0;
   const totalStock = hasProducts ? products.reduce((sum, p) => sum + Number(p.quantity || 0), 0) : 0;
-  const stockData = hasProducts ? products : [];
   const lowStock = hasProducts ? products.filter((p) => Number(p.quantity || 0) <= (Number(p.lowStockThreshold || 10))).length : 0;
   const outOfStock = hasProducts ? products.filter((p) => Number(p.quantity || 0) === 0).length : 0;
   const maintenance = hasProducts ? products.filter((p) => p.maintenanceStatus === "pending").length || 0 : 0;
 
   return (
     <div className="dashboard-page page-enter stagger">
-      <div className="dashboard-header" style={{ animation: "fadeInDown 0.3s ease-out", animationFillMode: "both" }}>
+      <div className="dashboard-header">
         <div>
           <h1 className="dashboard-title">Welcome back, Joel! 👋</h1>
-          <p className="dashboard-subtitle">Here&apos;s what&apos;s happening with your inventory and maintenance today.</p>
+          <p className="dashboard-subtitle">Here's what's happening with your inventory and maintenance today.</p>
         </div>
         <div className="dashboard-date">
-          <div className="date-box">
+          <div>
             <div className="date-main">May 30, 2025</div>
             <div className="date-sub">Friday, 10:30 AM</div>
           </div>
@@ -102,23 +94,11 @@ export default function DashboardPage({ products, categories }) {
       </div>
 
       <div className="stats-grid">
-        {loading || !hasProducts ? (
-          <>
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-          </>
-        ) : (
-          <>
-            <div style={{ animationDelay: "0ms" }}><StatCard title="TOTAL ITEMS" value={totalItems} sub="All inventory items" color="#3b82f6" chartType="box" /></div>
-            <div style={{ animationDelay: "50ms" }}><StatCard title="TOTAL STOCK" value={totalStock} sub="All items in stock" color="#10b981" chartType="chart-up" /></div>
-            <div style={{ animationDelay: "100ms" }}><StatCard title="LOW STOCK" value={lowStock} sub="Items running low" color="#f59e0b" chartType="warning" /></div>
-            <div style={{ animationDelay: "150ms" }}><StatCard title="OUT OF STOCK" value={outOfStock} sub="Items out of stock" color="#ef4444" chartType="box-out" /></div>
-            <div style={{ animationDelay: "200ms" }}><StatCard title="MAINTENANCE" value={maintenance} sub="Pending requests" color="#6366f1" chartType="wrench" /></div>
-          </>
-        )}
+        <div style={{ animationDelay: "0ms" }}><StatCard title="TOTAL ITEMS" value={totalItems} sub="All inventory items" color="#3b82f6" chartType="box" /></div>
+        <div style={{ animationDelay: "50ms" }}><StatCard title="TOTAL STOCK" value={totalStock} sub="All items in stock" color="#10b981" chartType="chart-up" /></div>
+        <div style={{ animationDelay: "100ms" }}><StatCard title="LOW STOCK" value={lowStock} sub="Items running low" color="#f59e0b" chartType="warning" /></div>
+        <div style={{ animationDelay: "150ms" }}><StatCard title="OUT OF STOCK" value={outOfStock} sub="Items out of stock" color="#ef4444" chartType="box-out" /></div>
+        <div style={{ animationDelay: "200ms" }}><StatCard title="MAINTENANCE" value={maintenance} sub="Pending requests" color="#6366f1" chartType="wrench" /></div>
       </div>
 
       <div className="dashboard-mid">
@@ -171,65 +151,6 @@ export default function DashboardPage({ products, categories }) {
             ))}
           </div>
         </div>
-      </div>
-
-      <div className="dashboard-bottom">
-        <div className="card table-card">
-          <div className="card-header">
-            <h3>Low Stock Items</h3>
-            <button className="text-btn">View All</button>
-          </div>
-          {loading || !hasProducts ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="skeleton" style={{ width: "100%", height: 48, borderRadius: 8 }} />
-              ))}
-            </div>
-          ) : (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Item Name</th>
-                  <th>Category</th>
-                  <th>Warehouse</th>
-                  <th>Current Stock</th>
-                  <th>Minimum Stock</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lowStockItems.map((item, idx) => (
-                  <tr key={idx} style={{ animation: "fadeInUp 0.3s ease-out", animationFillMode: "both", animationDelay: `${idx * 50}ms` }}>
-                    <td>
-                      <div className="item-cell">
-                        <div className="item-icon">
-                          <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=random&size=32`} alt="" />
-                        </div>
-                        <span>{item.name}</span>
-                      </div>
-                    </td>
-                    <td>{item.category}</td>
-                    <td>{item.warehouse}</td>
-                    <td style={{ color: item.stock === 0 ? "#ef4444" : "#f59e0b", fontWeight: 600 }}>{item.stock}</td>
-                    <td>{item.min}</td>
-                    <td>
-                      <span className={`badge ${item.status === "Out of Stock" ? "low" : "ok"}`}>{item.status}</span>
-                    </td>
-                    <td>
-                      <button className="view-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                        </svg>
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
 
         <div className="card activities-card">
           <div className="card-header">
@@ -248,16 +169,84 @@ export default function DashboardPage({ products, categories }) {
               </div>
             ))}
           </div>
-          <div className="quick-actions">
-            <h4>Quick Actions</h4>
-            <div className="qa-grid hover-lift">
-              {quickActions.map((qa) => (
-                <a key={qa.label} href={qa.href} className="qa-btn">
-                  <span className="qa-icon">{qa.icon}</span>
+        </div>
+      </div>
+
+      <div className="dashboard-bottom">
+        <div className="card table-card">
+          <div className="card-header">
+            <h3>Low Stock Items</h3>
+            <button className="text-btn">View All</button>
+          </div>
+          {!hasProducts ? (
+            <div style={{ padding: "40px 20px", textAlign: "center", color: "#64748b" }}>No products available.</div>
+          ) : (
+            <div className="table-wrap">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Warehouse</th>
+                    <th>Current Stock</th>
+                    <th>Minimum Stock</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {lowStockItems.map((item, idx) => (
+                    <tr key={idx} style={{ animation: "fadeInUp 0.3s ease-out", animationFillMode: "both", animationDelay: `${idx * 50}ms` }}>
+                      <td>
+                        <div className="item-cell">
+                          <div className="item-icon">
+                            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=random&size=32`} alt="" />
+                          </div>
+                          <span>{item.name}</span>
+                        </div>
+                      </td>
+                      <td>{item.category}</td>
+                      <td>
+                        <div className="warehouse-cell">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                          {item.warehouse}
+                        </div>
+                      </td>
+                      <td style={{ color: item.stock === 0 ? "#ef4444" : "#f59e0b", fontWeight: 600 }}>{item.stock}</td>
+                      <td>{item.min}</td>
+                      <td>
+                        <span className={`type-badge ${item.status === "Out of Stock" ? "out" : "in"}`}>{item.status}</span>
+                      </td>
+                      <td>
+                        <button className="view-btn">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                          </svg>
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="card activities-card">
+          <div className="card-header">
+            <h3>Quick Actions</h3>
+          </div>
+          <div className="qa-grid">
+            {quickActions.map((qa, idx) => {
+              const Icon = qa.icon;
+              return (
+                <a key={qa.label} href="#" className="qa-btn" style={{ animationDelay: `${idx * 30}ms` }}>
+                  <span className="qa-icon"><Icon size={20} /></span>
                   <span className="qa-label">{qa.label}</span>
                 </a>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
       </div>

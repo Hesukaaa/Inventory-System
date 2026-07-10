@@ -1,9 +1,15 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+dotenv.config();
 
 import productRoutes from "./routes/product.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
@@ -14,9 +20,9 @@ import purchaseOrderRoutes from "./routes/purchaseorder.routes.js";
 import stockTransactionRoutes from "./routes/stocktransaction.routes.js";
 import maintenanceRoutes from "./routes/maintenance.routes.js";
 
-dotenv.config();
-
 const app = express();
+const PORT = process.env.PORT || 5000;
+
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
@@ -31,6 +37,13 @@ app.use("/api/suppliers", supplierRoutes);
 app.use("/api/purchase-orders", purchaseOrderRoutes);
 app.use("/api/stock-transactions", stockTransactionRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "client/dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client/dist/index.html"));
+  });
+}
 
 function authMiddleware(req, res, next) {
   const header = req.headers.authorization || "";
@@ -55,12 +68,11 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message: err.message || "Server error" });
 });
 
-const PORT = process.env.PORT || 5000;
-mongoose.connection.on("connected", () => {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-});
-mongoose.connection.on("error", (err) => {
-  console.error("MongoDB connection error:", err);
+mongoose.connection.on("connected", () => console.log(`MongoDB connected`));
+mongoose.connection.on("error", (err) => console.error("MongoDB connection error:", err));
+
+mongoose.connect(process.env.MONGODB_URI).catch((err) => {
+  console.error("Initial MongoDB connection failed:", err.message);
 });
 
-mongoose.connect(process.env.MONGODB_URI);
+const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

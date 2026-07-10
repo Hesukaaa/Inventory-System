@@ -6,3 +6,6 @@ client/dist-build
 .env
 *.db
 .DS_Store
+
+.vercel
+.env*

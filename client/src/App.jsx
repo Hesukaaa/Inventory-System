@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ToastProvider } from "./components/Toast";
 import Login from "./components/Login";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import Sidebar from "./components/Sidebar";
 import TopHeader from "./components/TopHeader";
 import DashboardPage from "./pages/DashboardPage";
@@ -41,7 +42,6 @@ function useAuth() {
       localStorage.setItem("ims_user", JSON.stringify({ email: res.user.email, name: res.user.name, token: res.token }));
       setUser({ email: res.user.email, name: res.user.name, token: res.token });
     } catch (err) {
-      // login failed; keep user unauthenticated
       throw err;
     }
   };
@@ -59,6 +59,51 @@ function App() {
   const [page, setPage] = useState("dashboard");
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [resetToken, setResetToken] = useState(() => new URLSearchParams(window.location.search).get("token"));
+  const [verifying, setVerifying] = useState(true);
+  const verifiedRef = useRef(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    if (token) setResetToken(token);
+  }, []);
+
+  useEffect(() => {
+    if (verifiedRef.current) return;
+
+    async function verifyAndRoute() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+      if (!token) {
+        verifiedRef.current = true;
+        setVerifying(false);
+        return;
+      }
+
+      try {
+        const res = await api("/auth/verify", {
+          method: "POST",
+          body: JSON.stringify({ token }),
+        });
+
+        if (res.decoded.type === "reset") {
+          setResetToken(token);
+        } else {
+          setResetToken(null);
+          await login({ token, email: res.decoded.email, name: res.decoded.name || "User" });
+          window.history.replaceState({}, "", window.location.pathname + window.location.hash);
+        }
+      } catch {
+        setResetToken(null);
+      } finally {
+        verifiedRef.current = true;
+        setVerifying(false);
+      }
+    }
+
+    verifyAndRoute();
+  }, [login]);
 
   const refresh = async () => {
     try {
@@ -71,6 +116,43 @@ function App() {
 
   useEffect(() => { refresh(); }, []);
 
+  if (verifying) {
+    return (
+      <div className="login-root">
+        <div className="login-left">
+          <div className="login-left-bg" />
+          <div className="login-left-content">
+            <div className="login-logo-wrap">
+               <img src="/Inventory-System/LOGO-WEBSITE.png" alt="Logo" className="login-logo-img" />
+            </div>
+            <div className="login-gold-line" />
+            <div className="login-headline">
+              Smart Inventory.<br />
+              Better Operations.
+            </div>
+            <div className="login-desc">
+              Manage inventory, maintenance, and resources efficiently and effortlessly.
+            </div>
+            <img src="/Inventory-System/image/invento.png" alt="Inventory" className="login-invento-img" />
+          </div>
+        </div>
+        <div className="login-right">
+          <div className="login-card">
+            <div className="login-header">
+              <h2>Verifying...</h2>
+              <div className="login-sub">Please wait while we verify your login</div>
+              <div className="gold-rule" />
+            </div>
+            <span className="btn-content">
+              <span className="btn-spinner" />
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user && resetToken) return <ResetPasswordPage onLogin={login} />;
   if (!user) return <Login onLogin={login} />;
 
   return (
