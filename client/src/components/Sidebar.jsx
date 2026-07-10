@@ -21,7 +21,7 @@ function Sidebar({ page, setPage, user, onLogout }) {
     <aside className="sidebar" aria-label="Sidebar navigation">
       <div className="sidebar-header">
         <div className="sidebar-logo">
-          <img src="/image/LOGO.png" alt="Logo" className="sidebar-logo-img" />
+          <img src="/Inventory-System/image/LOGO.png" alt="Logo" className="sidebar-logo-img" />
           <div className="sidebar-title">
             <div className="sidebar-title-main">iMAGE</div>
             <div className="sidebar-title-accent">&amp; MAINTENANCE</div>

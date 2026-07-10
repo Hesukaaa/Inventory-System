@@ -123,7 +123,7 @@ function App() {
           <div className="login-left-bg" />
           <div className="login-left-content">
             <div className="login-logo-wrap">
-                <img src="/image/LOGO.png" alt="Logo" className="login-logo-img" />
+                <img src="/Inventory-System/image/LOGO.png" alt="Logo" className="login-logo-img" />
             </div>
             <div className="login-gold-line" />
             <div className="login-headline">
@@ -133,7 +133,7 @@ function App() {
             <div className="login-desc">
               Manage inventory, maintenance, and resources efficiently and effortlessly.
             </div>
-            <img src="/image/invento.png" alt="Inventory" className="login-invento-img" />
+            <img src="/Inventory-System/image/invento.png" alt="Inventory" className="login-invento-img" />
           </div>
         </div>
         <div className="login-right">
