@@ -1,12 +1,21 @@
-import mongoose from "mongoose";
+import db, { persist } from "../db.js";
 
-const supplierSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true, trim: true },
-  contactPerson: { type: String, trim: true },
-  email: { type: String, trim: true },
-  phone: { type: String, trim: true },
-  address: { type: String, default: "" },
-  status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-}, { timestamps: true });
+const col = () => db.collection("suppliers");
 
-export default mongoose.model("Supplier", supplierSchema);
+export const getAll = () => col().find();
+export const findById = (id) => col().findById(id);
+export const create = async (data) => {
+  const item = col().create(data);
+  await persist();
+  return item;
+};
+export const findByIdAndUpdate = (id, data) => {
+  const item = col().findByIdAndUpdate(id, data, { new: true });
+  persist();
+  return item;
+};
+export const findByIdAndDelete = (id) => {
+  const item = col().findByIdAndDelete(id);
+  persist();
+  return item;
+};

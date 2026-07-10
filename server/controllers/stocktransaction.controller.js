@@ -1,6 +1,6 @@
 import StockTransaction from "../models/stocktransaction.model.js";
 
-export const getAll = async (query = {}) => {
+export const getAll = (query = {}) => {
   const filters = {};
   if (query.type) filters.type = query.type;
   if (query.warehouse) filters.warehouse = query.warehouse;
@@ -11,6 +11,7 @@ export const getAll = async (query = {}) => {
       { person: { $regex: query.search, $options: "i" } },
     ];
   }
-  return StockTransaction.find(filters).sort("-createdAt");
+  return StockTransaction.getAll(filters);
 };
+
 export const createOne = async (data) => StockTransaction.create(data);

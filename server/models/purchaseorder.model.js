@@ -1,15 +1,30 @@
-import mongoose from "mongoose";
+import db, { persist } from "../db.js";
 
-const purchaseOrderSchema = new mongoose.Schema({
-  poNumber: { type: String, required: true, unique: true, trim: true },
-  supplier: { type: mongoose.Schema.Types.ObjectId, ref: "Supplier", required: true },
-  warehouse: { type: String, required: true, trim: true },
-  category: { type: String, trim: true },
-  items: [{ name: String, quantity: Number, unitPrice: Number }],
-  totalItems: { type: Number, default: 0 },
-  totalValue: { type: Number, default: 0 },
-  status: { type: String, enum: ["Pending", "Completed", "Cancelled"], default: "Pending" },
-  expectedDelivery: { type: Date },
-}, { timestamps: true });
+const col = () => db.collection("purchaseOrders");
+const users = () => db.collection("users");
 
-export default mongoose.model("PurchaseOrder", purchaseOrderSchema);
+export const getAll = () => col().find();
+export const findById = (id) => col().findById(id);
+export const create = async (data) => {
+  const item = col().create(data);
+  await persist();
+  return item;
+};
+export const update = (id, data) => {
+  const item = col().findByIdAndUpdate(id, data, { new: true });
+  persist();
+  return item;
+};
+export const remove = (id) => {
+  const item = col().findByIdAndDelete(id);
+  persist();
+  return item;
+};
+
+export function withPopulatedSupplier(items) {
+  return (Array.isArray(items) ? items : [items]).map((item) => {
+    if (!item) return item;
+    const supplier = item.supplier ? users().findById(item.supplier) : null;
+    return { ...item, supplier: supplier ? { name: supplier.name } : null };
+  });
+}

@@ -1,6 +1,6 @@
 import Maintenance from "../models/maintenance.model.js";
 
-export const getAll = async (query = {}) => {
+export const getAll = (query = {}) => {
   const filters = {};
   if (query.type) filters.type = query.type;
   if (query.priority) filters.priority = query.priority;
@@ -13,6 +13,7 @@ export const getAll = async (query = {}) => {
       { reportedBy: { $regex: query.search, $options: "i" } },
     ];
   }
-  return Maintenance.find(filters).sort("-createdAt");
+  return Maintenance.getAll(filters);
 };
+
 export const createOne = async (data) => Maintenance.create(data);

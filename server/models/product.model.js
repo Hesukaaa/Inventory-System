@@ -1,14 +1,21 @@
-import mongoose from "mongoose";
+import db, { persist } from "../db.js";
 
-const productSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  description: { type: String, default: "", trim: true },
-  category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
-  sku: { type: String, required: true, unique: true, trim: true },
-  quantity: { type: Number, required: true, min: 0, default: 0 },
-  price: { type: Number, required: true, min: 0 },
-  lowStockThreshold: { type: Number, required: true, default: 10, min: 0 },
-  isActive: { type: Boolean, default: true },
-}, { timestamps: true });
+const col = () => db.collection("products");
 
-export default mongoose.model("Product", productSchema);
+export const getAll = (filters = {}) => col().find(filters);
+export const findById = (id) => col().findById(id);
+export const create = async (data) => {
+  const item = col().create(data);
+  await persist();
+  return item;
+};
+export const findByIdAndUpdate = (id, data) => {
+  const item = col().findByIdAndUpdate(id, data, { new: true });
+  persist();
+  return item;
+};
+export const findByIdAndDelete = (id) => {
+  const item = col().findByIdAndDelete(id);
+  persist();
+  return item;
+};

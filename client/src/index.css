@@ -153,7 +153,7 @@ button, a, input, select, textarea, table tr, .card, .icon-btn, .page-btn, .tab,
 .login-left-bg {
   position: absolute;
   inset: 0;
-  background-image: url('image/BG.png');
+  background-image: url('/image/BG.png');
   background-size: cover;
   background-position: center;
   opacity: 0.08;

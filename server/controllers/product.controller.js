@@ -11,13 +11,27 @@ export const getAll = async (search, category, lowStock) => {
   }
   if (category) filters.category = category;
   if (lowStock === "true") filters.quantity = { $lte: 10 };
-  return Product.find(filters).populate("category", "name").sort("-createdAt");
+  const items = Product.getAll(filters);
+  return items.map((p) => {
+    const cat = p.category ? Category.findById(p.category) : null;
+    return { ...p, category: cat ? { name: cat.name } : null };
+  }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 };
 
 export const createOne = async (data) => Product.create(data);
 
-export const getOne = async (id) => Product.findById(id).populate("category", "name");
+export const getOne = async (id) => {
+  const item = Product.findById(id);
+  if (!item) return null;
+  const cat = item.category ? Category.findById(item.category) : null;
+  return { ...item, category: cat ? { name: cat.name } : null };
+};
 
-export const updateOne = async (id, data) => Product.findByIdAndUpdate(id, data, { new: true }).populate("category", "name");
+export const updateOne = async (id, data) => {
+  const item = Product.findByIdAndUpdate(id, data);
+  if (!item) return null;
+  const cat = item.category ? Category.findById(item.category) : null;
+  return { ...item, category: cat ? { name: cat.name } : null };
+};
 
-export const softDelete = async (id) => Product.findByIdAndUpdate(id, { isActive: false }, { new: true });
+export const softDelete = async (id) => Product.findByIdAndUpdate(id, { isActive: false });

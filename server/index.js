@@ -1,13 +1,8 @@
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 dotenv.config();
 
@@ -19,6 +14,9 @@ import supplierRoutes from "./routes/supplier.routes.js";
 import purchaseOrderRoutes from "./routes/purchaseorder.routes.js";
 import stockTransactionRoutes from "./routes/stocktransaction.routes.js";
 import maintenanceRoutes from "./routes/maintenance.routes.js";
+import { initDb } from "./db.js";
+
+await initDb();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -37,13 +35,6 @@ app.use("/api/suppliers", supplierRoutes);
 app.use("/api/purchase-orders", purchaseOrderRoutes);
 app.use("/api/stock-transactions", stockTransactionRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
-
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "client/dist")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "client/dist/index.html"));
-  });
-}
 
 function authMiddleware(req, res, next) {
   const header = req.headers.authorization || "";
@@ -68,11 +59,4 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message: err.message || "Server error" });
 });
 
-mongoose.connection.on("connected", () => console.log(`MongoDB connected`));
-mongoose.connection.on("error", (err) => console.error("MongoDB connection error:", err));
-
-mongoose.connect(process.env.MONGODB_URI).catch((err) => {
-  console.error("Initial MongoDB connection failed:", err.message);
-});
-
-const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

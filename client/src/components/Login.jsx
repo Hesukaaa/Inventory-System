@@ -5,7 +5,7 @@ import api from "../lib/api";
 function HexLogo() {
   return (
     <div className="login-logo-wrap">
-      <img src="/Inventory-System/LOGO-WEBSITE.png" alt="Logo" className="login-logo-img" />
+      <img src="/image/LOGO.png" alt="Logo" className="login-logo-img" />
     </div>
   );
 }
@@ -92,7 +92,7 @@ function Login({ onLogin }) {
           <div className="login-desc">
             Manage inventory, maintenance, and resources efficiently and effortlessly.
           </div>
-          <img src="/Inventory-System/image/invento.png" alt="Inventory" className="login-invento-img" />
+          <img src="/image/invento.png" alt="Inventory" className="login-invento-img" />
         </div>
       </div>
       <div className="login-right">

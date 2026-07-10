@@ -1,8 +1,21 @@
-import mongoose from "mongoose";
+import db, { persist } from "../db.js";
 
-const categorySchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true, trim: true },
-  description: { type: String, default: "", trim: true },
-}, { timestamps: true });
+const col = () => db.collection("categories");
 
-export default mongoose.model("Category", categorySchema);
+export const getAll = () => col().find();
+export const findById = (id) => col().findById(id);
+export const create = async (data) => {
+  const item = col().create(data);
+  await persist();
+  return item;
+};
+export const findByIdAndUpdate = (id, data) => {
+  const item = col().findByIdAndUpdate(id, data, { new: true });
+  persist();
+  return item;
+};
+export const findByIdAndDelete = (id) => {
+  const item = col().findByIdAndDelete(id);
+  persist();
+  return item;
+};

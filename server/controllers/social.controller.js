@@ -1,6 +1,6 @@
 import axios from "axios";
 import jwt from "jsonwebtoken";
-import User from "../models/user.model.js";
+import { findByProvider, create } from "../models/user.model.js";
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -13,9 +13,9 @@ const facebookRedirectUri = process.env.FACEBOOK_REDIRECT_URI;
 const appUrl = process.env.APP_URL || "http://localhost:3000";
 
 async function findOrCreateSocialUser(provider, providerId, name, email) {
-  let user = await User.findOne({ provider, providerId });
+  let user = findByProvider(provider, providerId);
   if (!user) {
-    user = await User.create({ name, email, provider, providerId });
+    user = await create({ name, email, provider, providerId });
   }
   return user;
 }
