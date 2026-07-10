@@ -30,10 +30,8 @@ export const login = async (req, res, next) => {
     if (!email || !password) return res.status(401).json({ message: "Invalid credentials" });
     const user = findByEmail(email);
     if (!user || !user.password || user.provider !== "local") return res.status(401).json({ message: "Invalid credentials" });
-
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ message: "Invalid credentials" });
-
     const token = jwt.sign({ id: user._id, email: user.email, name: user.name }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
   } catch (err) { next(err); }
